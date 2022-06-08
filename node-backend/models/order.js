@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
-const orderSchema = mongoose.Schema({});
+const orderSchema = new mongoose.Schema({});
 
-productSchema.virtual('id').get(function () {
+orderSchema.virtual('id').get(function () {
     return this._id.toHexString();
 });
 
-productSchema.set('toJSON', {
+orderSchema.set('toJSON', {
     virtuals: true,
 });
 
