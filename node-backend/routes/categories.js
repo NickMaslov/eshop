@@ -58,7 +58,7 @@ router.put('/:id', async (req, res) => {
                 icon: req.body.icon || category.icon,
                 color: req.body.color,
             },
-            { new: true }
+            { new: true } //return updated category
         );
 
         if (!category)

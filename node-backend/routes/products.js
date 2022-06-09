@@ -70,6 +70,7 @@ router.post(`/`, async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     try {
+        //I'm doing try-catch to handle this validation
         if (!mongoose.isValidObjectId(req.params.id)) {
             return res.status(400).send('Invalid Product Id');
         }
@@ -125,7 +126,7 @@ router.delete('/:id', async (req, res) => {
 
 router.get(`/get/count`, async (req, res) => {
     try {
-        const productCount = await Product.countDocuments((count) => count);
+        const productCount = await Product.countDocuments();
 
         if (!productCount) {
             return res.status(500).json({ success: false });
@@ -138,7 +139,7 @@ router.get(`/get/count`, async (req, res) => {
     }
 });
 
-router.get(`/get/featured/:count`, async (req, res) => {
+router.get(`/get/featured/:count?`, async (req, res) => {
     try {
         const count = req.params.count ? req.params.count : 0;
         const products = await Product.find({ isFeatured: true }).limit(+count);
