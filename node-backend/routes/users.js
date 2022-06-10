@@ -5,6 +5,56 @@ const jwt = require('jsonwebtoken');
 
 const { User } = require('../models');
 
+router.post('/login', async (req, res, next) => {
+    try {
+        const user = await User.findOne({ email: req.body.email });
+        if (!user) {
+            return res.status(400).send('The user not found');
+        }
+
+        if (user && bcrypt.compareSync(req.body.password, user.passwordHash)) {
+            const token = jwt.sign(
+                {
+                    userId: user.id,
+                    isAdmin: user.isAdmin,
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: '1d' }
+            );
+
+            res.status(200).send({ user: user.email, token: token });
+        } else {
+            res.status(400).send('password is wrong!');
+        }
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.post('/register', async (req, res, next) => {
+    try {
+        let user = new User({
+            name: req.body.name,
+            email: req.body.email,
+            passwordHash: bcrypt.hashSync(req.body.password, 10),
+            phone: req.body.phone,
+            isAdmin: req.body.isAdmin,
+            street: req.body.street,
+            apartment: req.body.apartment,
+            zip: req.body.zip,
+            city: req.body.city,
+            country: req.body.country,
+        });
+        user = await user.save();
+
+        if (!user) return res.status(400).send('the user cannot be created!');
+
+        res.send(user);
+    } catch (error) {
+        next(error);
+    }
+});
+
 router.get(`/`, async (req, res, next) => {
     try {
         const userList = await User.find().select('-passwordHash');
@@ -112,56 +162,6 @@ router.get(`/get/count`, async (req, res, next) => {
         res.send({
             userCount,
         });
-    } catch (error) {
-        next(error);
-    }
-});
-
-router.post('/login', async (req, res, next) => {
-    try {
-        const user = await User.findOne({ email: req.body.email });
-        if (!user) {
-            return res.status(400).send('The user not found');
-        }
-
-        if (user && bcrypt.compareSync(req.body.password, user.passwordHash)) {
-            const token = jwt.sign(
-                {
-                    userId: user.id,
-                    isAdmin: user.isAdmin,
-                },
-                process.env.JWT_SECRET,
-                { expiresIn: '1d' }
-            );
-
-            res.status(200).send({ user: user.email, token: token });
-        } else {
-            res.status(400).send('password is wrong!');
-        }
-    } catch (error) {
-        next(error);
-    }
-});
-
-router.post('/register', async (req, res, next) => {
-    try {
-        let user = new User({
-            name: req.body.name,
-            email: req.body.email,
-            passwordHash: bcrypt.hashSync(req.body.password, 10),
-            phone: req.body.phone,
-            isAdmin: req.body.isAdmin,
-            street: req.body.street,
-            apartment: req.body.apartment,
-            zip: req.body.zip,
-            city: req.body.city,
-            country: req.body.country,
-        });
-        user = await user.save();
-
-        if (!user) return res.status(400).send('the user cannot be created!');
-
-        res.send(user);
     } catch (error) {
         next(error);
     }

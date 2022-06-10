@@ -3,14 +3,14 @@ const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
-// const authJwt = require('./helpers/jwt');
+const authJwt = require('./helpers/jwt');
 const errorHandler = require('./helpers/error-handler');
 
 const app = express();
 app.use(cors());
 app.options('*', cors());
 app.use(express.json());
-// app.use(authJwt());
+app.use(authJwt());
 
 app.use(morgan('tiny'));
 
