@@ -16,9 +16,10 @@ function errorHandler(err, req, res, next) {
             message: 'Cast to ObjectId failed. Should be 12 characters string.',
         });
     }
+    // MongooseError:
 
     // default to 500 server error
-    return res.status(500).send(err);
+    return res.status(500).send({ error: err.message, err });
 }
 
 module.exports = errorHandler;

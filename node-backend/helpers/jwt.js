@@ -1,7 +1,6 @@
 const { expressjwt: jwt } = require('express-jwt');
 
 function authJwt() {
-    const api = process.env.API_URL;
     return jwt({
         secret: process.env.JWT_SECRET,
         algorithms: ['HS256'],
@@ -10,18 +9,18 @@ function authJwt() {
         path: [
             { url: /\/api\/products(.*)/, methods: ['GET', 'OPTIONS'] },
             { url: /\/api\/categories(.*)/, methods: ['GET', 'OPTIONS'] },
-            `${api}/users/login`,
-            `${api}/users/register`,
+            '/api/users/login',
+            '/api/users/register',
         ],
     });
 }
 
-async function isRevoked(req, payload, done) {
+async function isRevoked(req, payload) {
     if (!payload.isAdmin) {
-        done(null, true);
+        return false;
     }
 
-    done();
+    return true;
 }
 
 module.exports = authJwt;
