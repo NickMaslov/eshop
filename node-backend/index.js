@@ -7,12 +7,12 @@ const authJwt = require('./helpers/jwt');
 const errorHandler = require('./helpers/error-handler');
 
 const app = express();
+app.use(morgan('tiny'));
 app.use(cors());
 app.options('*', cors());
 app.use(express.json());
 app.use(authJwt());
-
-app.use(morgan('tiny'));
+app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
 
 const rootRouter = require('./routes');
 
